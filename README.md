@@ -67,7 +67,7 @@ CosmoOracle/
 
 1. Клонируйте репозиторий:
    ```bash
-   git clone https://github.com/yourusername/cosmooracle.git
+   git clone https://github.com/NoCoDeer/cosmooracle.git
    cd cosmooracle
    ```
 

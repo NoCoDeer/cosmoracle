@@ -1,0 +1,666 @@
+<%- include('../partials/header', { title: 'Профиль пользователя', active: 'users' }) %>
+
+<div class="page-inner mt--5">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-head-row">
+                        <div class="card-title">Профиль пользователя</div>
+                        <div class="card-tools">
+                            <a href="/users/<%= user.id %>/edit" class="btn btn-warning btn-border btn-round btn-sm mr-2">
+                                <span class="btn-label">
+                                    <i class="fa fa-edit"></i>
+                                </span>
+                                Редактировать
+                            </a>
+                            <a href="/users" class="btn btn-info btn-border btn-round btn-sm">
+                                <span class="btn-label">
+                                    <i class="fa fa-list"></i>
+                                </span>
+                                К списку пользователей
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="text-center mb-4">
+                                <% if (user.avatar) { %>
+                                    <img src="<%= user.avatar %>" alt="<%= user.name %>" class="avatar-img rounded-circle" style="width: 150px; height: 150px;">
+                                <% } else { %>
+                                    <div class="avatar-title rounded-circle border border-white bg-info" style="width: 150px; height: 150px; font-size: 60px; line-height: 150px; margin: 0 auto;">
+                                        <%= user.name.charAt(0) %>
+                                    </div>
+                                <% } %>
+                                <h3 class="mt-3"><%= user.name %></h3>
+                                <% if (user.status === 'active') { %>
+                                    <span class="badge badge-success">Активен</span>
+                                <% } else { %>
+                                    <span class="badge badge-danger">Заблокирован</span>
+                                <% } %>
+                                
+                                <% if (user.subscription === 'premium') { %>
+                                    <span class="badge badge-warning ml-2">Премиум</span>
+                                <% } else { %>
+                                    <span class="badge badge-secondary ml-2">Бесплатная</span>
+                                <% } %>
+                            </div>
+                            
+                            <div class="card card-stats card-round">
+                                <div class="card-body">
+                                    <div class="row align-items-center">
+                                        <div class="col-icon">
+                                            <div class="icon-big text-center icon-primary bubble-shadow-small">
+                                                <i class="fas fa-star"></i>
+                                            </div>
+                                        </div>
+                                        <div class="col col-stats ml-3 ml-sm-0">
+                                            <div class="numbers">
+                                                <p class="card-category">Бонусные баллы</p>
+                                                <h4 class="card-title"><%= user.bonusPoints || 0 %></h4>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card card-stats card-round">
+                                <div class="card-body">
+                                    <div class="row align-items-center">
+                                        <div class="col-icon">
+                                            <div class="icon-big text-center icon-info bubble-shadow-small">
+                                                <i class="fas fa-users"></i>
+                                            </div>
+                                        </div>
+                                        <div class="col col-stats ml-3 ml-sm-0">
+                                            <div class="numbers">
+                                                <p class="card-category">Приглашенные пользователи</p>
+                                                <h4 class="card-title"><%= user.referrals ? user.referrals.length : 0 %></h4>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card card-stats card-round">
+                                <div class="card-body">
+                                    <div class="row align-items-center">
+                                        <div class="col-icon">
+                                            <div class="icon-big text-center icon-success bubble-shadow-small">
+                                                <i class="fas fa-calendar-alt"></i>
+                                            </div>
+                                        </div>
+                                        <div class="col col-stats ml-3 ml-sm-0">
+                                            <div class="numbers">
+                                                <p class="card-category">Дата регистрации</p>
+                                                <h4 class="card-title"><%= new Date(user.createdAt).toLocaleDateString('ru-RU') %></h4>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-9">
+                            <div class="nav-tabs-custom">
+                                <ul class="nav nav-tabs">
+                                    <li class="nav-item">
+                                        <a class="nav-link active" href="#info" data-toggle="tab">Основная информация</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="#astro" data-toggle="tab">Астрологические данные</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="#subscription" data-toggle="tab">Подписка</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="#payments" data-toggle="tab">Платежи</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="#activity" data-toggle="tab">Активность</a>
+                                    </li>
+                                </ul>
+                                
+                                <div class="tab-content">
+                                    <!-- Основная информация -->
+                                    <div class="tab-pane active" id="info">
+                                        <div class="table-responsive">
+                                            <table class="table table-hover">
+                                                <tbody>
+                                                    <tr>
+                                                        <th style="width: 30%">ID</th>
+                                                        <td><%= user.id %></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Имя</th>
+                                                        <td><%= user.name %></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Email</th>
+                                                        <td><%= user.email || 'Не указан' %></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Telegram ID</th>
+                                                        <td><%= user.telegramId || 'Не привязан' %></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Telegram Username</th>
+                                                        <td><%= user.telegramUsername ? '@' + user.telegramUsername : 'Не указан' %></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Источник регистрации</th>
+                                                        <td>
+                                                            <% if (user.source === 'email') { %>
+                                                                <span class="badge badge-primary">Email</span>
+                                                            <% } else if (user.source === 'telegram') { %>
+                                                                <span class="badge badge-info">Telegram</span>
+                                                            <% } else if (user.source === 'google') { %>
+                                                                <span class="badge badge-danger">Google</span>
+                                                            <% } else { %>
+                                                                <span class="badge badge-secondary">Неизвестно</span>
+                                                            <% } %>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Язык</th>
+                                                        <td>
+                                                            <% if (user.language === 'ru') { %>
+                                                                <span class="badge badge-primary">Русский</span>
+                                                            <% } else if (user.language === 'en') { %>
+                                                                <span class="badge badge-info">Английский</span>
+                                                            <% } else if (user.language === 'es') { %>
+                                                                <span class="badge badge-warning">Испанский</span>
+                                                            <% } else { %>
+                                                                <span class="badge badge-secondary">Не указан</span>
+                                                            <% } %>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Реферальный код</th>
+                                                        <td>
+                                                            <% if (user.referralCode) { %>
+                                                                <div class="input-group">
+                                                                    <input type="text" class="form-control" value="<%= user.referralCode %>" readonly>
+                                                                    <div class="input-group-append">
+                                                                        <button class="btn btn-primary copy-btn" data-clipboard-text="<%= user.referralCode %>">
+                                                                            <i class="fa fa-copy"></i>
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            <% } else { %>
+                                                                Не создан
+                                                            <% } %>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Приглашен пользователем</th>
+                                                        <td>
+                                                            <% if (user.referredBy) { %>
+                                                                <a href="/users/<%= user.referredBy.id %>"><%= user.referredBy.name %></a>
+                                                            <% } else { %>
+                                                                Нет
+                                                            <% } %>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Последний вход</th>
+                                                        <td><%= user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleString('ru-RU') : 'Нет данных' %></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Астрологические данные -->
+                                    <div class="tab-pane" id="astro">
+                                        <% if (user.birthData && (user.birthData.date || user.birthData.time || user.birthData.place)) { %>
+                                            <div class="table-responsive">
+                                                <table class="table table-hover">
+                                                    <tbody>
+                                                        <tr>
+                                                            <th style="width: 30%">Дата рождения</th>
+                                                            <td><%= user.birthData.date ? new Date(user.birthData.date).toLocaleDateString('ru-RU') : 'Не указана' %></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th>Время рождения</th>
+                                                            <td><%= user.birthData.time || 'Не указано' %></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th>Место рождения</th>
+                                                            <td><%= user.birthData.place || 'Не указано' %></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th>Координаты</th>
+                                                            <td>
+                                                                <% if (user.birthData.latitude && user.birthData.longitude) { %>
+                                                                    <%= user.birthData.latitude %>, <%= user.birthData.longitude %>
+                                                                <% } else { %>
+                                                                    Не указаны
+                                                                <% } %>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            
+                                            <% if (user.birthData.date && user.birthData.time && user.birthData.latitude && user.birthData.longitude) { %>
+                                                <div class="text-center mt-4">
+                                                    <a href="/astrology/chart/<%= user.id %>" class="btn btn-primary">
+                                                        <i class="fa fa-star"></i> Просмотреть натальную карту
+                                                    </a>
+                                                </div>
+                                            <% } %>
+                                        <% } else { %>
+                                            <div class="alert alert-info">
+                                                <i class="fa fa-info-circle"></i> Пользователь не указал астрологические данные
+                                            </div>
+                                        <% } %>
+                                    </div>
+                                    
+                                    <!-- Подписка -->
+                                    <div class="tab-pane" id="subscription">
+                                        <div class="table-responsive">
+                                            <table class="table table-hover">
+                                                <tbody>
+                                                    <tr>
+                                                        <th style="width: 30%">Тип подписки</th>
+                                                        <td>
+                                                            <% if (user.subscription === 'premium') { %>
+                                                                <span class="badge badge-warning">Премиум</span>
+                                                            <% } else { %>
+                                                                <span class="badge badge-secondary">Бесплатная</span>
+                                                            <% } %>
+                                                        </td>
+                                                    </tr>
+                                                    <% if (user.subscription === 'premium') { %>
+                                                        <tr>
+                                                            <th>Дата начала</th>
+                                                            <td><%= user.subscriptionStartDate ? new Date(user.subscriptionStartDate).toLocaleDateString('ru-RU') : 'Нет данных' %></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th>Дата окончания</th>
+                                                            <td>
+                                                                <% if (user.subscriptionEndDate) { %>
+                                                                    <%= new Date(user.subscriptionEndDate).toLocaleDateString('ru-RU') %>
+                                                                    <% 
+                                                                        const now = new Date();
+                                                                        const endDate = new Date(user.subscriptionEndDate);
+                                                                        const daysLeft = Math.ceil((endDate - now) / (1000 * 60 * 60 * 24));
+                                                                    %>
+                                                                    <% if (daysLeft > 0) { %>
+                                                                        <span class="badge badge-info ml-2">осталось <%= daysLeft %> дн.</span>
+                                                                    <% } else { %>
+                                                                        <span class="badge badge-danger ml-2">истекла</span>
+                                                                    <% } %>
+                                                                <% } else { %>
+                                                                    <span class="badge badge-success">Бессрочная</span>
+                                                                <% } %>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th>Автопродление</th>
+                                                            <td>
+                                                                <% if (user.autoRenew) { %>
+                                                                    <span class="badge badge-success">Включено</span>
+                                                                <% } else { %>
+                                                                    <span class="badge badge-danger">Отключено</span>
+                                                                <% } %>
+                                                            </td>
+                                                        </tr>
+                                                    <% } %>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        
+                                        <div class="mt-4">
+                                            <h4>История подписок</h4>
+                                            <% if (user.subscriptionHistory && user.subscriptionHistory.length > 0) { %>
+                                                <div class="table-responsive">
+                                                    <table class="table table-hover">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Дата</th>
+                                                                <th>Тип</th>
+                                                                <th>Период</th>
+                                                                <th>Источник</th>
+                                                                <th>Статус</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <% user.subscriptionHistory.forEach(history => { %>
+                                                                <tr>
+                                                                    <td><%= new Date(history.date).toLocaleDateString('ru-RU') %></td>
+                                                                    <td>
+                                                                        <% if (history.type === 'premium') { %>
+                                                                            <span class="badge badge-warning">Премиум</span>
+                                                                        <% } else { %>
+                                                                            <span class="badge badge-secondary">Бесплатная</span>
+                                                                        <% } %>
+                                                                    </td>
+                                                                    <td><%= history.duration %> дней</td>
+                                                                    <td>
+                                                                        <% if (history.source === 'payment') { %>
+                                                                            <span class="badge badge-success">Оплата</span>
+                                                                        <% } else if (history.source === 'admin') { %>
+                                                                            <span class="badge badge-primary">Администратор</span>
+                                                                        <% } else if (history.source === 'referral') { %>
+                                                                            <span class="badge badge-info">Реферальная программа</span>
+                                                                        <% } else { %>
+                                                                            <span class="badge badge-secondary"><%= history.source %></span>
+                                                                        <% } %>
+                                                                    </td>
+                                                                    <td>
+                                                                        <% if (history.status === 'active') { %>
+                                                                            <span class="badge badge-success">Активна</span>
+                                                                        <% } else if (history.status === 'expired') { %>
+                                                                            <span class="badge badge-danger">Истекла</span>
+                                                                        <% } else if (history.status === 'cancelled') { %>
+                                                                            <span class="badge badge-warning">Отменена</span>
+                                                                        <% } else { %>
+                                                                            <span class="badge badge-secondary"><%= history.status %></span>
+                                                                        <% } %>
+                                                                    </td>
+                                                                </tr>
+                                                            <% }); %>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            <% } else { %>
+                                                <div class="alert alert-info">
+                                                    <i class="fa fa-info-circle"></i> История подписок отсутствует
+                                                </div>
+                                            <% } %>
+                                        </div>
+                                        
+                                        <div class="mt-4 text-right">
+                                            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#extendSubscriptionModal">
+                                                <i class="fa fa-plus"></i> Продлить подписку
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Платежи -->
+                                    <div class="tab-pane" id="payments">
+                                        <% if (user.payments && user.payments.length > 0) { %>
+                                            <div class="table-responsive">
+                                                <table class="table table-hover">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>ID</th>
+                                                            <th>Дата</th>
+                                                            <th>Сумма</th>
+                                                            <th>Метод</th>
+                                                            <th>Статус</th>
+                                                            <th>Описание</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <% user.payments.forEach(payment => { %>
+                                                            <tr>
+                                                                <td><%= payment.id %></td>
+                                                                <td><%= new Date(payment.date).toLocaleString('ru-RU') %></td>
+                                                                <td><%= payment.amount %> <%= payment.currency %></td>
+                                                                <td>
+                                                                    <% if (payment.method === 'stripe') { %>
+                                                                        <span class="badge badge-primary">Stripe</span>
+                                                                    <% } else if (payment.method === 'telegram') { %>
+                                                                        <span class="badge badge-info">Telegram Stars</span>
+                                                                    <% } else if (payment.method === 'yookassa') { %>
+                                                                        <span class="badge badge-warning">YooKassa</span>
+                                                                    <% } else { %>
+                                                                        <span class="badge badge-secondary"><%= payment.method %></span>
+                                                                    <% } %>
+                                                                </td>
+                                                                <td>
+                                                                    <% if (payment.status === 'completed') { %>
+                                                                        <span class="badge badge-success">Выполнен</span>
+                                                                    <% } else if (payment.status === 'pending') { %>
+                                                                        <span class="badge badge-warning">В обработке</span>
+                                                                    <% } else if (payment.status === 'failed') { %>
+                                                                        <span class="badge badge-danger">Ошибка</span>
+                                                                    <% } else if (payment.status === 'refunded') { %>
+                                                                        <span class="badge badge-info">Возврат</span>
+                                                                    <% } else { %>
+                                                                        <span class="badge badge-secondary"><%= payment.status %></span>
+                                                                    <% } %>
+                                                                </td>
+                                                                <td><%= payment.description %></td>
+                                                            </tr>
+                                                        <% }); %>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        <% } else { %>
+                                            <div class="alert alert-info">
+                                                <i class="fa fa-info-circle"></i> История платежей отсутствует
+                                            </div>
+                                        <% } %>
+                                    </div>
+                                    
+                                    <!-- Активность -->
+                                    <div class="tab-pane" id="activity">
+                                        <% if (user.activity && user.activity.length > 0) { %>
+                                            <div class="table-responsive">
+                                                <table class="table table-hover">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Дата</th>
+                                                            <th>Тип</th>
+                                                            <th>Описание</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <% user.activity.forEach(activity => { %>
+                                                            <tr>
+                                                                <td><%= new Date(activity.date).toLocaleString('ru-RU') %></td>
+                                                                <td>
+                                                                    <% if (activity.type === 'login') { %>
+                                                                        <span class="badge badge-primary">Вход</span>
+                                                                    <% } else if (activity.type === 'horoscope') { %>
+                                                                        <span class="badge badge-info">Гороскоп</span>
+                                                                    <% } else if (activity.type === 'tarot') { %>
+                                                                        <span class="badge badge-warning">Таро</span>
+                                                                    <% } else if (activity.type === 'chat') { %>
+                                                                        <span class="badge badge-success">Чат</span>
+                                                                    <% } else if (activity.type === 'payment') { %>
+                                                                        <span class="badge badge-danger">Платеж</span>
+                                                                    <% } else { %>
+                                                                        <span class="badge badge-secondary"><%= activity.type %></span>
+                                                                    <% } %>
+                                                                </td>
+                                                                <td><%= activity.description %></td>
+                                                            </tr>
+                                                        <% }); %>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        <% } else { %>
+                                            <div class="alert alert-info">
+                                                <i class="fa fa-info-circle"></i> История активности отсутствует
+                                            </div>
+                                        <% } %>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <% if (user.referrals && user.referrals.length > 0) { %>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Приглашенные пользователи</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Пользователь</th>
+                                        <th>Дата регистрации</th>
+                                        <th>Подписка</th>
+                                        <th>Статус</th>
+                                        <th>Действия</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% user.referrals.forEach(referral => { %>
+                                        <tr>
+                                            <td><%= referral.id %></td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="avatar avatar-sm mr-2">
+                                                        <% if (referral.avatar) { %>
+                                                            <img src="<%= referral.avatar %>" alt="<%= referral.name %>" class="avatar-img rounded-circle">
+                                                        <% } else { %>
+                                                            <span class="avatar-title rounded-circle border border-white bg-info"><%= referral.name.charAt(0) %></span>
+                                                        <% } %>
+                                                    </div>
+                                                    <%= referral.name %>
+                                                </div>
+                                            </td>
+                                            <td><%= new Date(referral.createdAt).toLocaleDateString('ru-RU') %></td>
+                                            <td>
+                                                <% if (referral.subscription === 'premium') { %>
+                                                    <span class="badge badge-warning">Премиум</span>
+                                                <% } else { %>
+                                                    <span class="badge badge-secondary">Бесплатная</span>
+                                                <% } %>
+                                            </td>
+                                            <td>
+                                                <% if (referral.status === 'active') { %>
+                                                    <span class="badge badge-success">Активен</span>
+                                                <% } else { %>
+                                                    <span class="badge badge-danger">Заблокирован</span>
+                                                <% } %>
+                                            </td>
+                                            <td>
+                                                <a href="/users/<%= referral.id %>" class="btn btn-link btn-primary btn-lg" data-toggle="tooltip" title="Просмотр">
+                                                    <i class="fa fa-eye"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    <% }); %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <% } %>
+</div>
+
+<!-- Модальное окно для продления подписки -->
+<div class="modal fade" id="extendSubscriptionModal" tabindex="-1" role="dialog" aria-labelledby="extendSubscriptionModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="extendSubscriptionModalLabel">Продление подписки</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="/users/<%= user.id %>/extend-subscription" method="POST">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="subscriptionType">Тип подписки</label>
+                        <select class="form-control" id="subscriptionType" name="subscriptionType">
+                            <option value="premium">Премиум</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="duration">Продолжительность</label>
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="duration" name="duration" value="30" min="1">
+                            <div class="input-group-append">
+                                <span class="input-group-text">дней</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="source">Источник</label>
+                        <select class="form-control" id="source" name="source">
+                            <option value="admin">Администратор</option>
+                            <option value="referral">Реферальная программа</option>
+                            <option value="promo">Промо-акция</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="comment">Комментарий</label>
+                        <textarea class="form-control" id="comment" name="comment" rows="3" placeholder="Необязательный комментарий"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" class="custom-control-input" id="notifyUser" name="notifyUser" checked>
+                            <label class="custom-control-label" for="notifyUser">Уведомить пользователя</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+                    <button type="submit" class="btn btn-primary">Продлить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        // Инициализация тултипов
+        $('[data-toggle="tooltip"]').tooltip();
+        
+        // Инициализация буфера обмена для копирования реферального кода
+        var clipboard = new ClipboardJS('.copy-btn');
+        
+        clipboard.on('success', function(e) {
+            swal({
+                title: 'Скопировано!',
+                text: 'Реферальный код скопирован в буфер обмена',
+                icon: 'success',
+                buttons: {
+                    confirm: {
+                        text: 'OK',
+                        value: true,
+                        visible: true,
+                        className: 'btn btn-success',
+                        closeModal: true
+                    }
+                }
+            });
+            e.clearSelection();
+        });
+        
+        clipboard.on('error', function(e) {
+            swal({
+                title: 'Ошибка!',
+                text: 'Не удалось скопировать код. Пожалуйста, выделите его вручную и скопируйте.',
+                icon: 'error',
+                buttons: {
+                    confirm: {
+                        text: 'OK',
+                        value: true,
+                        visible: true,
+                        className: 'btn btn-danger',
+                        closeModal: true
+                    }
+                }
+            });
+        });
+    });
+</script>
+
+<%- include('../partials/footer') %>

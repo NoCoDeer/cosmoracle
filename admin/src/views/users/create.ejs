@@ -1,0 +1,343 @@
+<%- include('../partials/header', { title: 'Создание пользователя', active: 'users' }) %>
+
+<div class="page-inner mt--5">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-head-row">
+                        <div class="card-title">Создание нового пользователя</div>
+                        <div class="card-tools">
+                            <a href="/users" class="btn btn-info btn-border btn-round btn-sm">
+                                <span class="btn-label">
+                                    <i class="fa fa-list"></i>
+                                </span>
+                                К списку пользователей
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <form action="/users/create" method="POST">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="name">Имя пользователя <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="name" name="name" required>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="email">Email <span class="text-danger">*</span></label>
+                                    <input type="email" class="form-control" id="email" name="email" required>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="password">Пароль <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <input type="password" class="form-control" id="password" name="password" required>
+                                        <div class="input-group-append">
+                                            <button class="btn btn-outline-secondary toggle-password" type="button">
+                                                <i class="fa fa-eye"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <small class="form-text text-muted">Минимум 8 символов, должен содержать буквы и цифры</small>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="confirmPassword">Подтверждение пароля <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
+                                        <div class="input-group-append">
+                                            <button class="btn btn-outline-secondary toggle-password" type="button">
+                                                <i class="fa fa-eye"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="source">Источник регистрации</label>
+                                    <select class="form-control" id="source" name="source">
+                                        <option value="email" selected>Email</option>
+                                        <option value="telegram">Telegram</option>
+                                        <option value="google">Google</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="language">Язык</label>
+                                    <select class="form-control" id="language" name="language">
+                                        <option value="ru" selected>Русский</option>
+                                        <option value="en">Английский</option>
+                                        <option value="es">Испанский</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="subscription">Тип подписки</label>
+                                    <select class="form-control" id="subscription" name="subscription">
+                                        <option value="free" selected>Бесплатная</option>
+                                        <option value="premium">Премиум</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group subscription-details" style="display: none">
+                                    <label for="subscriptionEndDate">Дата окончания подписки</label>
+                                    <input type="date" class="form-control" id="subscriptionEndDate" name="subscriptionEndDate">
+                                    <small class="form-text text-muted">Оставьте пустым для бессрочной подписки</small>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="status">Статус</label>
+                                    <select class="form-control" id="status" name="status">
+                                        <option value="active" selected>Активен</option>
+                                        <option value="blocked">Заблокирован</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="telegramId">Telegram ID</label>
+                                    <input type="text" class="form-control" id="telegramId" name="telegramId">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="telegramUsername">Telegram Username</label>
+                                    <input type="text" class="form-control" id="telegramUsername" name="telegramUsername">
+                                    <small class="form-text text-muted">Без символа @, например: username</small>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="referredBy">Приглашен пользователем (ID)</label>
+                                    <input type="text" class="form-control" id="referredBy" name="referredBy">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card mt-4">
+                            <div class="card-header">
+                                <div class="card-title">Данные для гороскопа</div>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="birthDate">Дата рождения</label>
+                                            <input type="date" class="form-control" id="birthDate" name="birthDate">
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label for="birthTime">Время рождения</label>
+                                            <input type="time" class="form-control" id="birthTime" name="birthTime">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="birthPlace">Место рождения</label>
+                                            <input type="text" class="form-control" id="birthPlace" name="birthPlace">
+                                        </div>
+                                        
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="latitude">Широта</label>
+                                                    <input type="text" class="form-control" id="latitude" name="latitude">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="longitude">Долгота</label>
+                                                    <input type="text" class="form-control" id="longitude" name="longitude">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card mt-4">
+                            <div class="card-header">
+                                <div class="card-title">Реферальная система</div>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="referralCode">Реферальный код</label>
+                                            <div class="input-group">
+                                                <input type="text" class="form-control" id="referralCode" name="referralCode">
+                                                <div class="input-group-append">
+                                                    <button type="button" class="btn btn-primary" id="generateReferralCode">
+                                                        <i class="fa fa-sync-alt"></i> Сгенерировать
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <small class="form-text text-muted">Если не указан, будет сгенерирован автоматически</small>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="bonusPoints">Бонусные баллы</label>
+                                            <input type="number" class="form-control" id="bonusPoints" name="bonusPoints" value="0" min="0">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card mt-4">
+                            <div class="card-header">
+                                <div class="card-title">Дополнительные действия</div>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input" id="sendWelcomeEmail" name="sendWelcomeEmail" checked>
+                                        <label class="custom-control-label" for="sendWelcomeEmail">Отправить приветственное письмо</label>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input" id="generatePassword" name="generatePassword">
+                                        <label class="custom-control-label" for="generatePassword">Сгенерировать случайный пароль</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group text-right mt-4">
+                            <a href="/users" class="btn btn-secondary">Отмена</a>
+                            <button type="submit" class="btn btn-primary">Создать пользователя</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        // Показать/скрыть поля для премиум-подписки
+        $('#subscription').change(function() {
+            if ($(this).val() === 'premium') {
+                $('.subscription-details').show();
+            } else {
+                $('.subscription-details').hide();
+            }
+        });
+        
+        // Показать/скрыть пароль
+        $('.toggle-password').click(function() {
+            const input = $(this).closest('.input-group').find('input');
+            const icon = $(this).find('i');
+            
+            if (input.attr('type') === 'password') {
+                input.attr('type', 'text');
+                icon.removeClass('fa-eye').addClass('fa-eye-slash');
+            } else {
+                input.attr('type', 'password');
+                icon.removeClass('fa-eye-slash').addClass('fa-eye');
+            }
+        });
+        
+        // Генерация реферального кода
+        $('#generateReferralCode').click(function() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let referralCode = '';
+            for (let i = 0; i < 8; i++) {
+                referralCode += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            $('#referralCode').val(referralCode);
+        });
+        
+        // Генерация случайного пароля
+        $('#generatePassword').change(function() {
+            if ($(this).is(':checked')) {
+                const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()';
+                let password = '';
+                for (let i = 0; i < 12; i++) {
+                    password += chars.charAt(Math.floor(Math.random() * chars.length));
+                }
+                $('#password').val(password);
+                $('#confirmPassword').val(password);
+                $('#password').attr('type', 'text');
+                $('#confirmPassword').attr('type', 'text');
+                $('.toggle-password').find('i').removeClass('fa-eye').addClass('fa-eye-slash');
+            } else {
+                $('#password').val('');
+                $('#confirmPassword').val('');
+                $('#password').attr('type', 'password');
+                $('#confirmPassword').attr('type', 'password');
+                $('.toggle-password').find('i').removeClass('fa-eye-slash').addClass('fa-eye');
+            }
+        });
+        
+        // Валидация формы
+        $('form').submit(function(e) {
+            const password = $('#password').val();
+            const confirmPassword = $('#confirmPassword').val();
+            
+            // Проверка совпадения паролей
+            if (password !== confirmPassword) {
+                e.preventDefault();
+                swal({
+                    title: 'Ошибка!',
+                    text: 'Пароли не совпадают',
+                    icon: 'error',
+                    buttons: {
+                        confirm: {
+                            text: 'OK',
+                            value: true,
+                            visible: true,
+                            className: 'btn btn-danger',
+                            closeModal: true
+                        }
+                    }
+                });
+                return false;
+            }
+            
+            // Проверка сложности пароля
+            if (password.length < 8 || !/[A-Za-z]/.test(password) || !/[0-9]/.test(password)) {
+                e.preventDefault();
+                swal({
+                    title: 'Ошибка!',
+                    text: 'Пароль должен содержать минимум 8 символов, включая буквы и цифры',
+                    icon: 'error',
+                    buttons: {
+                        confirm: {
+                            text: 'OK',
+                            value: true,
+                            visible: true,
+                            className: 'btn btn-danger',
+                            closeModal: true
+                        }
+                    }
+                });
+                return false;
+            }
+            
+            return true;
+        });
+        
+        // Автозаполнение координат по месту рождения
+        $('#birthPlace').blur(function() {
+            const place = $(this).val();
+            if (place) {
+                // В реальном приложении здесь будет запрос к API геокодирования
+                // Для примера просто заполним случайными координатами
+                $('#latitude').val((Math.random() * 180 - 90).toFixed(6));
+                $('#longitude').val((Math.random() * 360 - 180).toFixed(6));
+            }
+        });
+    });
+</script>
+
+<%- include('../partials/footer') %>

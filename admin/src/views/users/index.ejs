@@ -1,0 +1,359 @@
+<%- include('../partials/header', { title: 'Пользователи', active: 'users' }) %>
+
+<div class="page-inner mt--5">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-head-row">
+                        <div class="card-title">Список пользователей</div>
+                        <div class="card-tools">
+                            <a href="/users/create" class="btn btn-primary btn-round btn-sm">
+                                <i class="fa fa-plus"></i> Добавить пользователя
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-8">
+                            <form action="/users" method="GET" class="form-inline">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" name="search" placeholder="Поиск по имени, email или Telegram..." value="<%= search || '' %>">
+                                    <div class="input-group-append">
+                                        <button class="btn btn-primary" type="submit">
+                                            <i class="fa fa-search"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <select class="form-control" id="filterSubscription">
+                                    <option value="">Все подписки</option>
+                                    <option value="premium" <%= filter === 'premium' ? 'selected' : '' %>>Премиум</option>
+                                    <option value="free" <%= filter === 'free' ? 'selected' : '' %>>Бесплатная</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Пользователь</th>
+                                    <th>Email / Telegram</th>
+                                    <th>Регистрация</th>
+                                    <th>Подписка</th>
+                                    <th>Статус</th>
+                                    <th>Действия</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% if (users.length === 0) { %>
+                                    <tr>
+                                        <td colspan="7" class="text-center">Пользователи не найдены</td>
+                                    </tr>
+                                <% } else { %>
+                                    <% users.forEach(user => { %>
+                                        <tr>
+                                            <td><%= user.id %></td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="avatar avatar-sm mr-2">
+                                                        <% if (user.avatar) { %>
+                                                            <img src="<%= user.avatar %>" alt="<%= user.name %>" class="avatar-img rounded-circle">
+                                                        <% } else { %>
+                                                            <span class="avatar-title rounded-circle border border-white bg-info"><%= user.name.charAt(0) %></span>
+                                                        <% } %>
+                                                    </div>
+                                                    <%= user.name %>
+                                                    <% if (user.source === 'telegram') { %>
+                                                        <i class="fab fa-telegram-plane text-info ml-1" data-toggle="tooltip" title="Telegram"></i>
+                                                    <% } else if (user.source === 'google') { %>
+                                                        <i class="fab fa-google text-danger ml-1" data-toggle="tooltip" title="Google"></i>
+                                                    <% } %>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <% if (user.email) { %>
+                                                    <%= user.email %>
+                                                <% } else if (user.telegramUsername) { %>
+                                                    @<%= user.telegramUsername %>
+                                                <% } else if (user.telegramId) { %>
+                                                    ID: <%= user.telegramId %>
+                                                <% } else { %>
+                                                    Не указан
+                                                <% } %>
+                                            </td>
+                                            <td><%= new Date(user.createdAt).toLocaleDateString('ru-RU') %></td>
+                                            <td>
+                                                <% if (user.subscription === 'premium') { %>
+                                                    <span class="badge badge-warning">Премиум</span>
+                                                    <% if (user.subscriptionEndDate) { %>
+                                                        <small class="d-block text-muted">до <%= new Date(user.subscriptionEndDate).toLocaleDateString('ru-RU') %></small>
+                                                    <% } %>
+                                                <% } else { %>
+                                                    <span class="badge badge-secondary">Бесплатная</span>
+                                                <% } %>
+                                            </td>
+                                            <td>
+                                                <% if (user.status === 'active') { %>
+                                                    <span class="badge badge-success">Активен</span>
+                                                <% } else { %>
+                                                    <span class="badge badge-danger">Заблокирован</span>
+                                                <% } %>
+                                            </td>
+                                            <td>
+                                                <div class="btn-group">
+                                                    <a href="/users/<%= user.id %>" class="btn btn-link btn-primary btn-lg" data-toggle="tooltip" title="Просмотр">
+                                                        <i class="fa fa-eye"></i>
+                                                    </a>
+                                                    <a href="/users/<%= user.id %>/edit" class="btn btn-link btn-warning btn-lg" data-toggle="tooltip" title="Редактировать">
+                                                        <i class="fa fa-edit"></i>
+                                                    </a>
+                                                    <button type="button" class="btn btn-link btn-danger btn-lg toggle-status" data-id="<%= user.id %>" data-status="<%= user.status %>" data-toggle="tooltip" title="<%= user.status === 'active' ? 'Заблокировать' : 'Разблокировать' %>">
+                                                        <i class="fa <%= user.status === 'active' ? 'fa-ban' : 'fa-check' %>"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    <% }); %>
+                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <% if (totalPages > 1) { %>
+                        <div class="d-flex justify-content-center mt-4">
+                            <nav>
+                                <ul class="pagination pg-primary">
+                                    <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+                                        <a class="page-link" href="/users?page=<%= currentPage - 1 %><%= search ? '&search=' + search : '' %><%= filter ? '&filter=' + filter : '' %>" aria-label="Previous">
+                                            <span aria-hidden="true">&laquo;</span>
+                                            <span class="sr-only">Предыдущая</span>
+                                        </a>
+                                    </li>
+                                    
+                                    <% for (let i = 1; i <= totalPages; i++) { %>
+                                        <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                                            <a class="page-link" href="/users?page=<%= i %><%= search ? '&search=' + search : '' %><%= filter ? '&filter=' + filter : '' %>"><%= i %></a>
+                                        </li>
+                                    <% } %>
+                                    
+                                    <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+                                        <a class="page-link" href="/users?page=<%= currentPage + 1 %><%= search ? '&search=' + search : '' %><%= filter ? '&filter=' + filter : '' %>" aria-label="Next">
+                                            <span aria-hidden="true">&raquo;</span>
+                                            <span class="sr-only">Следующая</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Статистика пользователей</div>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="userStatsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Распределение подписок</div>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="subscriptionChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно для изменения статуса пользователя -->
+<div class="modal fade" id="statusModal" tabindex="-1" role="dialog" aria-labelledby="statusModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="statusModalLabel">Изменение статуса пользователя</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p id="statusMessage">Вы уверены, что хотите изменить статус этого пользователя?</p>
+                <form id="statusForm" action="/users/status" method="POST">
+                    <input type="hidden" id="userId" name="userId">
+                    <input type="hidden" id="newStatus" name="newStatus">
+                    <div class="form-group">
+                        <label for="statusReason">Причина (необязательно)</label>
+                        <textarea class="form-control" id="statusReason" name="statusReason" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" class="custom-control-input" id="notifyUser" name="notifyUser" checked>
+                            <label class="custom-control-label" for="notifyUser">Уведомить пользователя</label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+                <button type="button" class="btn btn-primary" id="confirmStatus">Подтвердить</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        // Инициализация тултипов
+        $('[data-toggle="tooltip"]').tooltip();
+        
+        // Фильтрация по типу подписки
+        $('#filterSubscription').change(function() {
+            const filter = $(this).val();
+            const currentUrl = new URL(window.location.href);
+            
+            if (filter) {
+                currentUrl.searchParams.set('filter', filter);
+            } else {
+                currentUrl.searchParams.delete('filter');
+            }
+            
+            currentUrl.searchParams.set('page', 1);
+            window.location.href = currentUrl.toString();
+        });
+        
+        // Обработка изменения статуса пользователя
+        $('.toggle-status').click(function() {
+            const userId = $(this).data('id');
+            const currentStatus = $(this).data('status');
+            const newStatus = currentStatus === 'active' ? 'blocked' : 'active';
+            const statusText = newStatus === 'active' ? 'активировать' : 'заблокировать';
+            
+            $('#userId').val(userId);
+            $('#newStatus').val(newStatus);
+            $('#statusMessage').text(`Вы уверены, что хотите ${statusText} этого пользователя?`);
+            $('#statusModal').modal('show');
+        });
+        
+        // Подтверждение изменения статуса
+        $('#confirmStatus').click(function() {
+            $('#statusForm').submit();
+        });
+        
+        // График статистики пользователей
+        var userStatsCtx = document.getElementById('userStatsChart').getContext('2d');
+        
+        // Данные для графика статистики пользователей
+        var userStatsLabels = ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл'];
+        var userStatsData = [0, 0, 0, 0, 0, 0, 0];
+        
+        var userStatsChart = new Chart(userStatsCtx, {
+            type: 'line',
+            data: {
+                labels: userStatsLabels,
+                datasets: [{
+                    label: 'Новые пользователи',
+                    borderColor: "#1d7af3",
+                    pointBorderColor: "#FFF",
+                    pointBackgroundColor: "#1d7af3",
+                    pointBorderWidth: 2,
+                    pointHoverRadius: 4,
+                    pointHoverBorderWidth: 1,
+                    pointRadius: 4,
+                    backgroundColor: 'rgba(29, 122, 243, 0.1)',
+                    fill: true,
+                    borderWidth: 2,
+                    data: userStatsData
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 10,
+                        fontColor: '#1d7af3',
+                    }
+                },
+                tooltips: {
+                    bodySpacing: 4,
+                    mode: "nearest",
+                    intersect: 0,
+                    position: "nearest",
+                    xPadding: 10,
+                    yPadding: 10,
+                    caretPadding: 10
+                },
+                layout: {
+                    padding: {left: 15, right: 15, top: 15, bottom: 15}
+                }
+            }
+        });
+        
+        // График распределения подписок
+        var subscriptionCtx = document.getElementById('subscriptionChart').getContext('2d');
+        
+        // Данные для графика распределения подписок
+        var premiumCount = 0;
+        var freeCount = 0;
+        
+        var subscriptionChart = new Chart(subscriptionCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Премиум', 'Бесплатная'],
+                datasets: [{
+                    data: [premiumCount, freeCount],
+                    backgroundColor: ['#ffad46', '#adb5bd'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        fontColor: '#1d7af3',
+                        fontSize: 14,
+                        padding: 20
+                    }
+                },
+                tooltips: {
+                    callbacks: {
+                        label: function(tooltipItem, data) {
+                            const dataset = data.datasets[tooltipItem.datasetIndex];
+                            const total = dataset.data.reduce((previousValue, currentValue) => previousValue + currentValue);
+                            const currentValue = dataset.data[tooltipItem.index];
+                            const percentage = Math.floor(((currentValue/total) * 100)+0.5);
+                            return data.labels[tooltipItem.index] + ': ' + currentValue + ' (' + percentage + '%)';
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
+
+<%- include('../partials/footer') %>

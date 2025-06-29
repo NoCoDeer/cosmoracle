@@ -1,0 +1,345 @@
+<%- include('../partials/header', { title: 'Редактирование пользователя', active: 'users' }) %>
+
+<div class="page-inner mt--5">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-head-row">
+                        <div class="card-title">Редактирование пользователя</div>
+                        <div class="card-tools">
+                            <a href="/users/<%= user.id %>" class="btn btn-info btn-border btn-round btn-sm">
+                                <span class="btn-label">
+                                    <i class="fa fa-eye"></i>
+                                </span>
+                                Просмотр профиля
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <form action="/users/<%= user.id %>/edit" method="POST">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="name">Имя пользователя <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="name" name="name" value="<%= user.name %>" required>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="email">Email <span class="text-danger">*</span></label>
+                                    <input type="email" class="form-control" id="email" name="email" value="<%= user.email %>" required>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="password">Новый пароль</label>
+                                    <div class="input-group">
+                                        <input type="password" class="form-control" id="password" name="password" placeholder="Оставьте пустым, чтобы не менять">
+                                        <div class="input-group-append">
+                                            <button class="btn btn-outline-secondary toggle-password" type="button">
+                                                <i class="fa fa-eye"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <small class="form-text text-muted">Минимум 8 символов, должен содержать буквы и цифры</small>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="confirmPassword">Подтверждение нового пароля</label>
+                                    <div class="input-group">
+                                        <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" placeholder="Подтвердите новый пароль">
+                                        <div class="input-group-append">
+                                            <button class="btn btn-outline-secondary toggle-password" type="button">
+                                                <i class="fa fa-eye"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="source">Источник регистрации</label>
+                                    <select class="form-control" id="source" name="source">
+                                        <option value="email" <%= user.source === 'email' ? 'selected' : '' %>>Email</option>
+                                        <option value="telegram" <%= user.source === 'telegram' ? 'selected' : '' %>>Telegram</option>
+                                        <option value="google" <%= user.source === 'google' ? 'selected' : '' %>>Google</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="language">Язык</label>
+                                    <select class="form-control" id="language" name="language">
+                                        <option value="ru" <%= user.language === 'ru' ? 'selected' : '' %>>Русский</option>
+                                        <option value="en" <%= user.language === 'en' ? 'selected' : '' %>>Английский</option>
+                                        <option value="es" <%= user.language === 'es' ? 'selected' : '' %>>Испанский</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="subscription">Тип подписки</label>
+                                    <select class="form-control" id="subscription" name="subscription">
+                                        <option value="free" <%= user.subscription === 'free' ? 'selected' : '' %>>Бесплатная</option>
+                                        <option value="premium" <%= user.subscription === 'premium' ? 'selected' : '' %>>Премиум</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group subscription-details" <%= user.subscription === 'premium' ? '' : 'style="display: none"' %>>
+                                    <label for="subscriptionEndDate">Дата окончания подписки</label>
+                                    <input type="date" class="form-control" id="subscriptionEndDate" name="subscriptionEndDate" value="<%= user.subscriptionEndDate ? new Date(user.subscriptionEndDate).toISOString().split('T')[0] : '' %>">
+                                    <small class="form-text text-muted">Оставьте пустым для бессрочной подписки</small>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="status">Статус</label>
+                                    <select class="form-control" id="status" name="status">
+                                        <option value="active" <%= user.status === 'active' ? 'selected' : '' %>>Активен</option>
+                                        <option value="blocked" <%= user.status === 'blocked' ? 'selected' : '' %>>Заблокирован</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="telegramId">Telegram ID</label>
+                                    <input type="text" class="form-control" id="telegramId" name="telegramId" value="<%= user.telegramId || '' %>">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="telegramUsername">Telegram Username</label>
+                                    <input type="text" class="form-control" id="telegramUsername" name="telegramUsername" value="<%= user.telegramUsername || '' %>">
+                                    <small class="form-text text-muted">Без символа @, например: username</small>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="referredBy">Приглашен пользователем (ID)</label>
+                                    <input type="text" class="form-control" id="referredBy" name="referredBy" value="<%= user.referredBy ? user.referredBy.id : '' %>">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card mt-4">
+                            <div class="card-header">
+                                <div class="card-title">Данные для гороскопа</div>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="birthDate">Дата рождения</label>
+                                            <input type="date" class="form-control" id="birthDate" name="birthDate" value="<%= user.birthData && user.birthData.date ? new Date(user.birthData.date).toISOString().split('T')[0] : '' %>">
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label for="birthTime">Время рождения</label>
+                                            <input type="time" class="form-control" id="birthTime" name="birthTime" value="<%= user.birthData && user.birthData.time ? user.birthData.time : '' %>">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="birthPlace">Место рождения</label>
+                                            <input type="text" class="form-control" id="birthPlace" name="birthPlace" value="<%= user.birthData && user.birthData.place ? user.birthData.place : '' %>">
+                                        </div>
+                                        
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="latitude">Широта</label>
+                                                    <input type="text" class="form-control" id="latitude" name="latitude" value="<%= user.birthData && user.birthData.latitude ? user.birthData.latitude : '' %>">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="longitude">Долгота</label>
+                                                    <input type="text" class="form-control" id="longitude" name="longitude" value="<%= user.birthData && user.birthData.longitude ? user.birthData.longitude : '' %>">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card mt-4">
+                            <div class="card-header">
+                                <div class="card-title">Реферальная система</div>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="referralCode">Реферальный код</label>
+                                            <div class="input-group">
+                                                <input type="text" class="form-control" id="referralCode" name="referralCode" value="<%= user.referralCode || '' %>">
+                                                <div class="input-group-append">
+                                                    <button type="button" class="btn btn-primary" id="generateReferralCode">
+                                                        <i class="fa fa-sync-alt"></i> Сгенерировать
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="bonusPoints">Бонусные баллы</label>
+                                            <input type="number" class="form-control" id="bonusPoints" name="bonusPoints" value="<%= user.bonusPoints || 0 %>">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card mt-4">
+                            <div class="card-header">
+                                <div class="card-title">Дополнительные действия</div>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox" class="custom-control-input" id="sendPasswordResetEmail" name="sendPasswordResetEmail">
+                                                <label class="custom-control-label" for="sendPasswordResetEmail">Отправить письмо для сброса пароля</label>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox" class="custom-control-input" id="extendSubscription" name="extendSubscription">
+                                                <label class="custom-control-label" for="extendSubscription">Продлить подписку на</label>
+                                                <div class="input-group mt-2" style="width: 200px;">
+                                                    <input type="number" class="form-control" id="extensionDays" name="extensionDays" value="30" min="1">
+                                                    <div class="input-group-append">
+                                                        <span class="input-group-text">дней</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox" class="custom-control-input" id="addBonusPoints" name="addBonusPoints">
+                                                <label class="custom-control-label" for="addBonusPoints">Добавить бонусные баллы</label>
+                                                <div class="input-group mt-2" style="width: 200px;">
+                                                    <input type="number" class="form-control" id="bonusPointsToAdd" name="bonusPointsToAdd" value="100" min="1">
+                                                    <div class="input-group-append">
+                                                        <span class="input-group-text">баллов</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox" class="custom-control-input" id="sendNotification" name="sendNotification">
+                                                <label class="custom-control-label" for="sendNotification">Отправить уведомление</label>
+                                                <textarea class="form-control mt-2" id="notificationText" name="notificationText" rows="3" placeholder="Текст уведомления"></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group text-right mt-4">
+                            <a href="/users" class="btn btn-secondary">Отмена</a>
+                            <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        // Показать/скрыть поля для премиум-подписки
+        $('#subscription').change(function() {
+            if ($(this).val() === 'premium') {
+                $('.subscription-details').show();
+            } else {
+                $('.subscription-details').hide();
+            }
+        });
+        
+        // Показать/скрыть пароль
+        $('.toggle-password').click(function() {
+            const input = $(this).closest('.input-group').find('input');
+            const icon = $(this).find('i');
+            
+            if (input.attr('type') === 'password') {
+                input.attr('type', 'text');
+                icon.removeClass('fa-eye').addClass('fa-eye-slash');
+            } else {
+                input.attr('type', 'password');
+                icon.removeClass('fa-eye-slash').addClass('fa-eye');
+            }
+        });
+        
+        // Генерация реферального кода
+        $('#generateReferralCode').click(function() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let referralCode = '';
+            for (let i = 0; i < 8; i++) {
+                referralCode += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            $('#referralCode').val(referralCode);
+        });
+        
+        // Валидация формы
+        $('form').submit(function(e) {
+            const password = $('#password').val();
+            const confirmPassword = $('#confirmPassword').val();
+            
+            // Если пароль не пустой, проверяем его
+            if (password) {
+                // Проверка совпадения паролей
+                if (password !== confirmPassword) {
+                    e.preventDefault();
+                    swal({
+                        title: 'Ошибка!',
+                        text: 'Пароли не совпадают',
+                        icon: 'error',
+                        buttons: {
+                            confirm: {
+                                text: 'OK',
+                                value: true,
+                                visible: true,
+                                className: 'btn btn-danger',
+                                closeModal: true
+                            }
+                        }
+                    });
+                    return false;
+                }
+                
+                // Проверка сложности пароля
+                if (password.length < 8 || !/[A-Za-z]/.test(password) || !/[0-9]/.test(password)) {
+                    e.preventDefault();
+                    swal({
+                        title: 'Ошибка!',
+                        text: 'Пароль должен содержать минимум 8 символов, включая буквы и цифры',
+                        icon: 'error',
+                        buttons: {
+                            confirm: {
+                                text: 'OK',
+                                value: true,
+                                visible: true,
+                                className: 'btn btn-danger',
+                                closeModal: true
+                            }
+                        }
+                    });
+                    return false;
+                }
+            }
+            
+            return true;
+        });
+    });
+</script>
+
+<%- include('../partials/footer') %>

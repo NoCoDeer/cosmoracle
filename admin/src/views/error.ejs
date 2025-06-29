@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Ошибка <%= statusCode %> | CosmoOracle Admin</title>
+    <meta content='width=device-width, initial-scale=1.0, shrink-to-fit=no' name='viewport' />
+    <link rel="icon" href="/assets/img/icon.ico" type="image/x-icon"/>
+    
+    <!-- Fonts and icons -->
+    <script src="/assets/js/plugin/webfont/webfont.min.js"></script>
+    <script>
+        WebFont.load({
+            google: {"families":["Lato:300,400,700,900"]},
+            custom: {"families":["Flaticon", "Font Awesome 5 Solid", "Font Awesome 5 Regular", "Font Awesome 5 Brands", "simple-line-icons"], urls: ['/assets/css/fonts.min.css']},
+            active: function() {
+                sessionStorage.fonts = true;
+            }
+        });
+    </script>
+
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/assets/css/atlantis.min.css">
+    <link rel="stylesheet" href="/assets/css/custom.css">
+    
+    <style>
+        .error-bg {
+            background: linear-gradient(135deg, #6B46C1 0%, #4299E1 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .error-card {
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+        
+        .error-header {
+            background: linear-gradient(135deg, #6B46C1 0%, #4299E1 100%);
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .error-header img {
+            max-width: 200px;
+            margin-bottom: 15px;
+        }
+        
+        .error-code {
+            font-size: 72px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 0;
+            line-height: 1;
+        }
+        
+        .error-title {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 24px;
+            margin-top: 10px;
+            margin-bottom: 0;
+        }
+        
+        .error-body {
+            padding: 30px;
+            background: #fff;
+        }
+        
+        .error-message {
+            font-size: 16px;
+            color: #555;
+            margin-bottom: 20px;
+        }
+        
+        .btn-return {
+            background: linear-gradient(135deg, #6B46C1 0%, #4299E1 100%);
+            border: none;
+            border-radius: 5px;
+            padding: 12px 25px;
+            font-weight: 600;
+            transition: all 0.3s;
+            color: #fff;
+            display: inline-block;
+            text-decoration: none;
+        }
+        
+        .btn-return:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            color: #fff;
+            text-decoration: none;
+        }
+        
+        .error-footer {
+            text-align: center;
+            padding: 20px 30px;
+            background: #f9f9f9;
+            border-top: 1px solid #eee;
+        }
+        
+        .error-footer a {
+            color: #6B46C1;
+            transition: all 0.3s;
+        }
+        
+        .error-footer a:hover {
+            color: #4299E1;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body class="error-bg">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-12">
+                <div class="error-card">
+                    <div class="error-header">
+                        <img src="/assets/img/logo-white.png" alt="CosmoOracle">
+                        <h1 class="error-code"><%= statusCode || 404 %></h1>
+                        <h3 class="error-title"><%= message || 'Страница не найдена' %></h3>
+                    </div>
+                    <div class="error-body">
+                        <p class="error-message">
+                            <% if (statusCode === 404) { %>
+                                Запрашиваемая страница не существует или была перемещена.
+                            <% } else if (statusCode === 403) { %>
+                                У вас нет доступа к запрашиваемой странице.
+                            <% } else if (statusCode === 500) { %>
+                                Произошла внутренняя ошибка сервера. Пожалуйста, попробуйте позже.
+                            <% } else if (statusCode === 401) { %>
+                                Для доступа к этой странице необходимо авторизоваться.
+                            <% } else { %>
+                                Произошла ошибка при обработке вашего запроса.
+                            <% } %>
+                        </p>
+                        
+                        <% if (statusCode === 401) { %>
+                            <a href="/login" class="btn btn-primary btn-return">
+                                <i class="fas fa-sign-in-alt mr-2"></i> Войти в систему
+                            </a>
+                        <% } else { %>
+                            <a href="/dashboard" class="btn btn-primary btn-return">
+                                <i class="fas fa-home mr-2"></i> Вернуться на главную
+                            </a>
+                        <% } %>
+                    </div>
+                    <div class="error-footer">
+                        <p class="mb-0">© <%= new Date().getFullYear() %> CosmoOracle. Все права защищены.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Core JS Files -->
+    <script src="/assets/js/core/jquery.3.2.1.min.js"></script>
+    <script src="/assets/js/core/popper.min.js"></script>
+    <script src="/assets/js/core/bootstrap.min.js"></script>
+</body>
+</html>

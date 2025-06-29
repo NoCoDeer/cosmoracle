@@ -1,0 +1,183 @@
+version: '3.8'
+
+services:
+  # Frontend - Next.js + TailwindCSS + React
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: cosmooracle-frontend
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    environment:
+      - NODE_ENV=${NODE_ENV:-development}
+      - NEXT_PUBLIC_BACKEND_URL=http://backend:${BACKEND_PORT:-3001}
+      - NEXT_PUBLIC_STRIPE_PUBLIC_KEY=${STRIPE_PUBLIC_KEY}
+      - NEXT_PUBLIC_YOOKASSA_SHOP_ID=${YOOKASSA_SHOP_ID}
+    depends_on:
+      - backend
+    networks:
+      - cosmooracle-network
+
+  # Backend - Fastify (Node.js) API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: cosmooracle-backend
+    restart: unless-stopped
+    ports:
+      - "${BACKEND_PORT:-3001}:3001"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=${NODE_ENV:-development}
+      - PORT=${BACKEND_PORT:-3001}
+      - DB_HOST=${DB_HOST:-postgres}
+      - DB_PORT=${DB_PORT:-5432}
+      - DB_NAME=${DB_NAME:-cosmooracle}
+      - DB_USER=${DB_USER:-postgres}
+      - DB_PASSWORD=${DB_PASSWORD:-postgres_password}
+      - REDIS_HOST=${REDIS_HOST:-redis}
+      - REDIS_PORT=${REDIS_PORT:-6379}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - JWT_SECRET=${JWT_SECRET:-your_jwt_secret_key}
+      - JWT_EXPIRES_IN=${JWT_EXPIRES_IN:-7d}
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - OPENROUTER_MODEL=${OPENROUTER_MODEL:-llama-4-70b-instruct}
+      - STRIPE_PUBLIC_KEY=${STRIPE_PUBLIC_KEY}
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
+      - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
+      - YOOKASSA_SHOP_ID=${YOOKASSA_SHOP_ID}
+      - YOOKASSA_SECRET_KEY=${YOOKASSA_SECRET_KEY}
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - TELEGRAM_WEBHOOK_URL=${TELEGRAM_WEBHOOK_URL}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - GOOGLE_CALLBACK_URL=${GOOGLE_CALLBACK_URL}
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_PORT=${SMTP_PORT}
+      - SMTP_USER=${SMTP_USER}
+      - SMTP_PASSWORD=${SMTP_PASSWORD}
+      - SMTP_FROM_EMAIL=${SMTP_FROM_EMAIL}
+      - SMTP_FROM_NAME=${SMTP_FROM_NAME}
+      - REFERRAL_BONUS_DAYS=${REFERRAL_BONUS_DAYS:-7}
+      - REFERRAL_PAYMENT_PERCENT=${REFERRAL_PAYMENT_PERCENT:-10}
+      - ASTRO_SERVICE_URL=http://astro-service:${ASTRO_SERVICE_PORT:-3003}
+      - TZ=${TZ:-UTC}
+    depends_on:
+      - postgres
+      - redis
+      - astro-service
+    networks:
+      - cosmooracle-network
+
+  # Admin Panel - Express.js + EJS
+  admin:
+    build:
+      context: ./admin
+      dockerfile: Dockerfile
+    container_name: cosmooracle-admin
+    restart: unless-stopped
+    ports:
+      - "${ADMIN_PORT:-3002}:3002"
+    volumes:
+      - ./admin:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=${NODE_ENV:-development}
+      - ADMIN_PORT=${ADMIN_PORT:-3002}
+      - DB_HOST=${DB_HOST:-postgres}
+      - DB_PORT=${DB_PORT:-5432}
+      - DB_NAME=${DB_NAME:-cosmooracle}
+      - DB_USER=${DB_USER:-postgres}
+      - DB_PASSWORD=${DB_PASSWORD:-postgres_password}
+      - JWT_SECRET=${JWT_SECRET:-your_jwt_secret_key}
+      - SESSION_SECRET=${SESSION_SECRET:-your_session_secret_key}
+      - TZ=${TZ:-UTC}
+    depends_on:
+      - postgres
+    networks:
+      - cosmooracle-network
+
+  # Astrology Engine - Python microservice
+  astro-service:
+    build:
+      context: ./astro-service
+      dockerfile: Dockerfile
+    container_name: cosmooracle-astro-service
+    restart: unless-stopped
+    ports:
+      - "${ASTRO_SERVICE_PORT:-3003}:3003"
+    volumes:
+      - ./astro-service:/app
+    environment:
+      - PORT=${ASTRO_SERVICE_PORT:-3003}
+      - TZ=${TZ:-UTC}
+    networks:
+      - cosmooracle-network
+
+  # PostgreSQL Database
+  postgres:
+    image: postgres:14-alpine
+    container_name: cosmooracle-postgres
+    restart: unless-stopped
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    environment:
+      - POSTGRES_DB=${DB_NAME:-cosmooracle}
+      - POSTGRES_USER=${DB_USER:-postgres}
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-postgres_password}
+    networks:
+      - cosmooracle-network
+
+  # Redis for caching and queues
+  redis:
+    image: redis:alpine
+    container_name: cosmooracle-redis
+    restart: unless-stopped
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis-data:/data
+    command: >
+      --requirepass ${REDIS_PASSWORD:-}
+    networks:
+      - cosmooracle-network
+
+  # pgAdmin for database management (development only)
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: cosmooracle-pgadmin
+    restart: unless-stopped
+    ports:
+      - "5050:80"
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@cosmooracle.com
+      - PGADMIN_DEFAULT_PASSWORD=admin
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    depends_on:
+      - postgres
+    networks:
+      - cosmooracle-network
+    profiles:
+      - dev
+
+volumes:
+  postgres-data:
+  redis-data:
+  pgadmin-data:
+
+networks:
+  cosmooracle-network:
+    driver: bridge

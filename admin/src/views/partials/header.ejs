@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title><%= title %> | CosmoOracle Admin</title>
+    <meta content='width=device-width, initial-scale=1.0, shrink-to-fit=no' name='viewport' />
+    <link rel="icon" href="/assets/img/icon.ico" type="image/x-icon"/>
+    
+    <!-- Fonts and icons -->
+    <script src="/assets/js/plugin/webfont/webfont.min.js"></script>
+    <script>
+        WebFont.load({
+            google: {"families":["Lato:300,400,700,900"]},
+            custom: {"families":["Flaticon", "Font Awesome 5 Solid", "Font Awesome 5 Regular", "Font Awesome 5 Brands", "simple-line-icons"], urls: ['/assets/css/fonts.min.css']},
+            active: function() {
+                sessionStorage.fonts = true;
+            }
+        });
+    </script>
+
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/assets/css/atlantis.min.css">
+    <link rel="stylesheet" href="/assets/css/custom.css">
+</head>
+<body>
+    <div class="wrapper">
+        <div class="main-header">
+            <!-- Logo Header -->
+            <div class="logo-header" data-background-color="blue">
+                <a href="/dashboard" class="logo">
+                    <img src="/assets/img/logo.png" alt="CosmoOracle" class="navbar-brand" height="40">
+                </a>
+                <button class="navbar-toggler sidenav-toggler ml-auto" type="button" data-toggle="collapse" data-target="collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon">
+                        <i class="icon-menu"></i>
+                    </span>
+                </button>
+                <button class="topbar-toggler more"><i class="icon-options-vertical"></i></button>
+                <div class="nav-toggle">
+                    <button class="btn btn-toggle toggle-sidebar">
+                        <i class="icon-menu"></i>
+                    </button>
+                </div>
+            </div>
+            <!-- End Logo Header -->
+
+            <!-- Navbar Header -->
+            <nav class="navbar navbar-header navbar-expand-lg" data-background-color="blue2">
+                <div class="container-fluid">
+                    <ul class="navbar-nav topbar-nav ml-md-auto align-items-center">
+                        <li class="nav-item dropdown hidden-caret">
+                            <a class="nav-link dropdown-toggle" href="#" id="notifDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fa fa-bell"></i>
+                                <% if (notifications && notifications.length > 0) { %>
+                                    <span class="notification"><%= notifications.length %></span>
+                                <% } %>
+                            </a>
+                            <ul class="dropdown-menu notif-box animated fadeIn" aria-labelledby="notifDropdown">
+                                <li>
+                                    <div class="dropdown-title">У вас <%= notifications ? notifications.length : 0 %> уведомлений</div>
+                                </li>
+                                <li>
+                                    <div class="notif-scroll scrollbar-outer">
+                                        <div class="notif-center">
+                                            <% if (notifications && notifications.length > 0) { %>
+                                                <% notifications.forEach(function(notification) { %>
+                                                    <a href="<%= notification.link || '#' %>">
+                                                        <div class="notif-icon notif-<%= notification.type || 'primary' %>">
+                                                            <i class="<%= notification.icon || 'fa fa-bell' %>"></i>
+                                                        </div>
+                                                        <div class="notif-content">
+                                                            <span class="block">
+                                                                <%= notification.title %>
+                                                            </span>
+                                                            <span class="time"><%= notification.time %></span> 
+                                                        </div>
+                                                    </a>
+                                                <% }); %>
+                                            <% } else { %>
+                                                <div class="text-center p-3">
+                                                    <p>Нет новых уведомлений</p>
+                                                </div>
+                                            <% } %>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <a class="see-all" href="/notifications">Все уведомления<i class="fa fa-angle-right"></i> </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown hidden-caret">
+                            <a class="dropdown-toggle profile-pic" data-toggle="dropdown" href="#" aria-expanded="false">
+                                <div class="avatar-sm">
+                                    <% if (currentUser && currentUser.avatar_url) { %>
+                                        <img src="<%= currentUser.avatar_url %>" alt="<%= currentUser.name %>" class="avatar-img rounded-circle">
+                                    <% } else { %>
+                                        <div class="avatar-img rounded-circle bg-primary text-white d-flex align-items-center justify-content-center">
+                                            <%= currentUser && currentUser.name ? currentUser.name.charAt(0).toUpperCase() : 'A' %>
+                                        </div>
+                                    <% } %>
+                                </div>
+                            </a>
+                            <ul class="dropdown-menu dropdown-user animated fadeIn">
+                                <div class="dropdown-user-scroll scrollbar-outer">
+                                    <li>
+                                        <div class="user-box">
+                                            <div class="avatar-lg">
+                                                <% if (currentUser && currentUser.avatar_url) { %>
+                                                    <img src="<%= currentUser.avatar_url %>" alt="<%= currentUser.name %>" class="avatar-img rounded">
+                                                <% } else { %>
+                                                    <div class="avatar-img rounded bg-primary text-white d-flex align-items-center justify-content-center" style="font-size: 2rem;">
+                                                        <%= currentUser && currentUser.name ? currentUser.name.charAt(0).toUpperCase() : 'A' %>
+                                                    </div>
+                                                <% } %>
+                                            </div>
+                                            <div class="u-text">
+                                                <h4><%= currentUser ? currentUser.name : 'Администратор' %></h4>
+                                                <p class="text-muted"><%= currentUser ? currentUser.email : 'admin@example.com' %></p>
+                                                <a href="/profile" class="btn btn-xs btn-secondary btn-sm">Профиль</a>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="dropdown-divider"></div>
+                                        <a class="dropdown-item" href="/profile">Мой профиль</a>
+                                        <a class="dropdown-item" href="/settings">Настройки</a>
+                                        <div class="dropdown-divider"></div>
+                                        <a class="dropdown-item" href="/logout">Выход</a>
+                                    </li>
+                                </div>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+            <!-- End Navbar -->
+        </div>
+
+        <!-- Sidebar -->
+        <div class="sidebar sidebar-style-2">
+            <div class="sidebar-wrapper scrollbar scrollbar-inner">
+                <div class="sidebar-content">
+                    <div class="user">
+                        <div class="avatar-sm float-left mr-2">
+                            <% if (currentUser && currentUser.avatar_url) { %>
+                                <img src="<%= currentUser.avatar_url %>" alt="<%= currentUser.name %>" class="avatar-img rounded-circle">
+                            <% } else { %>
+                                <div class="avatar-img rounded-circle bg-primary text-white d-flex align-items-center justify-content-center">
+                                    <%= currentUser && currentUser.name ? currentUser.name.charAt(0).toUpperCase() : 'A' %>
+                                </div>
+                            <% } %>
+                        </div>
+                        <div class="info">
+                            <a data-toggle="collapse" href="#collapseExample" aria-expanded="true">
+                                <span>
+                                    <%= currentUser ? currentUser.name : 'Администратор' %>
+                                    <span class="user-level">Администратор</span>
+                                    <span class="caret"></span>
+                                </span>
+                            </a>
+                            <div class="clearfix"></div>
+
+                            <div class="collapse in" id="collapseExample">
+                                <ul class="nav">
+                                    <li>
+                                        <a href="/profile">
+                                            <span class="link-collapse">Мой профиль</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="/settings">
+                                            <span class="link-collapse">Настройки</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="/logout">
+                                            <span class="link-collapse">Выход</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <ul class="nav nav-primary">
+                        <li class="nav-item <%= activePage === 'dashboard' ? 'active' : '' %>">
+                            <a href="/dashboard">
+                                <i class="fas fa-home"></i>
+                                <p>Панель управления</p>
+                            </a>
+                        </li>
+                        <li class="nav-section">
+                            <span class="sidebar-mini-icon">
+                                <i class="fa fa-ellipsis-h"></i>
+                            </span>
+                            <h4 class="text-section">Управление</h4>
+                        </li>
+                        <li class="nav-item <%= activePage === 'users' || activePage === 'users-list' || activePage === 'users-create' ? 'active' : '' %>">
+                            <a data-toggle="collapse" href="#users">
+                                <i class="fas fa-users"></i>
+                                <p>Пользователи</p>
+                                <span class="caret"></span>
+                            </a>
+                            <div class="collapse <%= activePage === 'users' || activePage === 'users-list' || activePage === 'users-create' ? 'show' : '' %>" id="users">
+                                <ul class="nav nav-collapse">
+                                    <li class="<%= activePage === 'users-list' ? 'active' : '' %>">
+                                        <a href="/users">
+                                            <span class="sub-item">Список пользователей</span>
+                                        </a>
+                                    </li>
+                                    <li class="<%= activePage === 'users-create' ? 'active' : '' %>">
+                                        <a href="/users/create">
+                                            <span class="sub-item">Добавить пользователя</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li class="nav-item <%= activePage === 'readings' || activePage === 'readings-list' ? 'active' : '' %>">
+                            <a data-toggle="collapse" href="#readings">
+                                <i class="fas fa-star"></i>
+                                <p>Чтения</p>
+                                <span class="caret"></span>
+                            </a>
+                            <div class="collapse <%= activePage === 'readings' || activePage === 'readings-list' ? 'show' : '' %>" id="readings">
+                                <ul class="nav nav-collapse">
+                                    <li class="<%= activePage === 'readings-list' ? 'active' : '' %>">
+                                        <a href="/readings">
+                                            <span class="sub-item">Все чтения</span>
+                                        </a>
+                                    </li>
+                                    <li class="<%= activePage === 'readings-tarot' ? 'active' : '' %>">
+                                        <a href="/readings/tarot">
+                                            <span class="sub-item">Таро</span>
+                                        </a>
+                                    </li>
+                                    <li class="<%= activePage === 'readings-horoscope' ? 'active' : '' %>">
+                                        <a href="/readings/horoscope">
+                                            <span class="sub-item">Гороскопы</span>
+                                        </a>
+                                    </li>
+                                    <li class="<%= activePage === 'readings-numerology' ? 'active' : '' %>">
+                                        <a href="/readings/numerology">
+                                            <span class="sub-item">Нумерология</span>
+                                        </a>
+                                    </li>
+                                    <li class="<%= activePage === 'readings-astrology' ? 'active' : '' %>">
+                                        <a href="/readings/astrology">
+                                            <span class="sub-item">Астрология</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li class="nav-item <%= activePage === 'payments' || activePage === 'payments-list' ? 'active' : '' %>">
+                            <a data-toggle="collapse" href="#payments">
+                                <i class="fas fa-credit-card"></i>
+                                <p>Платежи</p>
+                                <span class="caret"></span>
+                            </a>
+                            <div class="collapse <%= activePage === 'payments' || activePage === 'payments-list' ? 'show' : '' %>" id="payments">
+                                <ul class="nav nav-collapse">
+                                    <li class="<%= activePage === 'payments-list' ? 'active' : '' %>">
+                                        <a href="/payments">
+                                            <span class="sub-item">Все платежи</span>
+                                        </a>
+                                    </li>
+                                    <li class="<%= activePage === 'payments-stripe' ? 'active' : '' %>">
+                                        <a href="/payments/stripe">
+                                            <span class="sub-item">Stripe</span>
+                                        </a>
+                                    </li>
+                                    <li class="<%= activePage === 'payments-telegram' ? 'active' : '' %>">
+                                        <a href="/payments/telegram">
+                                            <span class="sub-item">Telegram Stars</span>
+                                        </a>
+                                    </li>
+                                    <li class="<%= activePage === 'payments-yookassa' ? 'active' : '' %>">
+                                        <a href="/payments/yookassa">
+                                            <span class="sub-item">YooKassa</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li class="nav-item <%= activePage === 'subscriptions' ? 'active' : '' %>">
+                            <a href="/subscriptions">
+                                <i class="fas fa-sync"></i>
+                                <p>Подписки</p>
+                            </a>
+                        </li>
+                        <li class="nav-item <%= activePage === 'referrals' ? 'active' : '' %>">
+                            <a href="/referrals">
+                                <i class="fas fa-user-plus"></i>
+                                <p>Рефералы</p>
+                            </a>
+                        </li>
+                        <li class="nav-section">
+                            <span class="sidebar-mini-icon">
+                                <i class="fa fa-ellipsis-h"></i>
+                            </span>
+                            <h4 class="text-section">Контент</h4>
+                        </li>
+                        <li class="nav-item <%= activePage === 'horoscopes' || activePage === 'horoscopes-list' ? 'active' : '' %>">
+                            <a data-toggle="collapse" href="#horoscopes">
+                                <i class="fas fa-sun"></i>
+                                <p>Гороскопы</p>
+                                <span class="caret"></span>
+                            </a>
+                            <div class="collapse <%= activePage === 'horoscopes' || activePage === 'horoscopes-list' ? 'show' : '' %>" id="horoscopes">
+                                <ul class="nav nav-collapse">
+                                    <li class="<%= activePage === 'horoscopes-list' ? 'active' : '' %>">
+                                        <a href="/horoscopes">
+                                            <span class="sub-item">Все гороскопы</span>
+                                        </a>
+                                    </li>
+                                    <li class="<%= activePage === 'horoscopes-create' ? 'active' : '' %>">
+                                        <a href="/horoscopes/create">
+                                            <span class="sub-item">Создать гороскоп</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li class="nav-item <%= activePage === 'tarot' || activePage === 'tarot-list' ? 'active' : '' %>">
+                            <a data-toggle="collapse" href="#tarot">
+                                <i class="fas fa-magic"></i>
+                                <p>Таро</p>
+                                <span class="caret"></span>
+                            </a>
+                            <div class="collapse <%= activePage === 'tarot' || activePage === 'tarot-list' ? 'show' : '' %>" id="tarot">
+                                <ul class="nav nav-collapse">
+                                    <li class="<%= activePage === 'tarot-list' ? 'active' : '' %>">
+                                        <a href="/tarot">
+                                            <span class="sub-item">Карты Таро</span>
+                                        </a>
+                                    </li>
+                                    <li class="<%= activePage === 'tarot-spreads' ? 'active' : '' %>">
+                                        <a href="/tarot/spreads">
+                                            <span class="sub-item">Расклады</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li class="nav-item <%= activePage === 'lunar' ? 'active' : '' %>">
+                            <a href="/lunar">
+                                <i class="fas fa-moon"></i>
+                                <p>Лунный календарь</p>
+                            </a>
+                        </li>
+                        <li class="nav-item <%= activePage === 'prompts' ? 'active' : '' %>">
+                            <a href="/prompts">
+                                <i class="fas fa-comment-alt"></i>
+                                <p>Шаблоны промптов</p>
+                            </a>
+                        </li>
+                        <li class="nav-section">
+                            <span class="sidebar-mini-icon">
+                                <i class="fa fa-ellipsis-h"></i>
+                            </span>
+                            <h4 class="text-section">Система</h4>
+                        </li>
+                        <li class="nav-item <%= activePage === 'push' ? 'active' : '' %>">
+                            <a href="/push">
+                                <i class="fas fa-bell"></i>
+                                <p>Push-уведомления</p>
+                            </a>
+                        </li>
+                        <li class="nav-item <%= activePage === 'settings' ? 'active' : '' %>">
+                            <a href="/settings">
+                                <i class="fas fa-cog"></i>
+                                <p>Настройки</p>
+                            </a>
+                        </li>
+                        <li class="nav-item <%= activePage === 'logs' ? 'active' : '' %>">
+                            <a href="/logs">
+                                <i class="fas fa-file-alt"></i>
+                                <p>Логи</p>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- End Sidebar -->
+
+        <div class="main-panel">
+            <div class="content">
+                <% if (success) { %>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <%= success %>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                <% } %>
+                
+                <% if (error) { %>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <%= error %>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                <% } %>
